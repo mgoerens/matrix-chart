@@ -416,7 +416,7 @@ coturn:
 
   # Shared secret for communication between Synapse and Coturn.
   # Optional, will be auto-generated if not overridden here.
-  sharedSecret: ""
+  sharedSecret: "ChangeMe"
 
   # UDP port range for TURN connections
   ports:
