@@ -247,7 +247,7 @@ postgresql:
   # Whether to deploy the stable/postgresql chart with this chart. If disabled, make sure PostgreSQL is available at the hostname below and credentials are configured below
   enabled: true
 
-  postgresql-password: ChangeMe!
+  postgresqlPassword: ChangeMe!
 
   username: matrix
   password: matrix
