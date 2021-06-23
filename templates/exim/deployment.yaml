@@ -22,11 +22,11 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if not .Values.isOpenshift }}
       securityContext:
-        {{- if not .Values.isOpenshift }}
         runAsUser: 100
         runAsGroup: 101
-        {{- end }}
+      {{- end }}
       containers:
         - name: "exim-relay"
           image: "{{ .Values.mail.relay.image.repository }}:{{ .Values.mail.relay.image.tag }}"
