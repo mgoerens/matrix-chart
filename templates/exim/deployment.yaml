@@ -23,9 +23,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- if .Values.isOpenshift }}
-        runAsNonRoot: true
-        {{- else }}
+        {{- if not .Values.isOpenshift }}
         runAsUser: 100
         runAsGroup: 101
         {{- end }}
