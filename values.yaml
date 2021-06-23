@@ -693,3 +693,5 @@ fullnameOverride: ""
 
 networkPolicies:
   enabled: true
+
+isOpenshift: true
