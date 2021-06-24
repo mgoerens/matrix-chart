@@ -30,8 +30,6 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      # generate signing key only on fresh install
-      {{- if .Release.IsInstall }}
       initContainers:
         - name: generate-signing-key
           image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
@@ -41,21 +39,17 @@ spec:
               value: {{ .Values.matrix.serverName }}
             - name: SYNAPSE_REPORT_STATS
               value: {{ .Values.matrix.telemetry | ternary "yes" "no" | quote }}
-          command: ["python"]
+          command: ["/bin/sh", "-c"]
           args:
-            - "-m"
-            - "synapse.app.homeserver"
-            - "--config-path"
-            - "/data/homeserver.yaml"
-            - "--keys-directory"
-            - "/data/keys"
-            - "--generate-keys"
+            - if [ ! -z /data/keys/{{ .Values.matrix.serverName }}.signing.key ]; then
+              python -m synapse.app.homeserver --config-path /data/homeserver.yaml --keys-directory /data/keys --generate-keys;
+              else echo "Keys already present - noop";
+              fi
           volumeMounts:
             - name: synapse-config
               mountPath: /data
             - name: signing-key
               mountPath: /data/keys
-      {{- end }} {{/* end if .Release.IsInstall */}}
       containers:
         - name: "synapse"
           image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
