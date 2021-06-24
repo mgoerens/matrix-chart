@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "matrix.fullname" . }}-generate-signing-key
+  labels:
+{{ include "matrix.labels" . | indent 4 }}
+{{ include "matrix.synapse.labels" . | indent 4}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ include "matrix.fullname" . }}-generate-signing-key
+        image: "{{ .Values.synapse.image.repository }}:{{ .Values.synapse.image.tag }}"
+        imagePullPolicy: {{ .Values.synapse.image.pullPolicy }}
+        env:
+        - name: SYNAPSE_SERVER_NAME
+          value: {{ .Values.matrix.serverName }}
+        - name: SYNAPSE_REPORT_STATS
+          value: {{ .Values.matrix.telemetry | ternary "yes" "no" | quote }}
+        command: ["python"]
+        args:
+        - "-m"
+        - "synapse.app.homeserver"
+        - "--config-path"
+        - "/data/homeserver.yaml"
+        - "--keys-directory"
+        - "/data/keys"
+        - "--generate-keys"
+        volumeMounts:
+        - name: synapse-config
+          mountPath: /data
+        - name: signing-key
+          mountPath: /data/keys 
+      restartPolicy: OnFailure 
+      volumes:
+      - name: synapse-config
+        configMap:
+          name: {{ include "matrix.fullname" . }}-synapse-config
+      - name: signing-key
+        persistentVolumeClaim:
+          claimName: {{ include "matrix.fullname" . }}-signing-key
