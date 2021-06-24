@@ -694,4 +694,4 @@ fullnameOverride: ""
 networkPolicies:
   enabled: true
 
-isOpenshift: true
+isOpenshift: false
